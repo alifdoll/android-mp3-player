@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.alifdoll.musicplayer.databinding.ItemMusicBinding
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 class MusicRecyclerAdapter(val musics: ArrayList<Music>) : RecyclerView.Adapter<MusicRecyclerAdapter.MusicViewHolder>(){
 
@@ -28,15 +30,18 @@ class MusicRecyclerAdapter(val musics: ArrayList<Music>) : RecyclerView.Adapter<
         holder.bind(music)
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount() = musics.size
 
     inner class MusicViewHolder(val binding: ItemMusicBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(music: Music) {
             binding.apply {
                 musicTitle.text = music.title
                 musicArtist.text = music.artist
+
+//                Glide
+//                    .with(itemView.context)
+//                    .load(music.image)
+//                    .into(musicPoster)
             }
         }
 

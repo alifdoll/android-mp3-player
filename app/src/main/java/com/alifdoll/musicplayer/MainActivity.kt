@@ -7,6 +7,7 @@ import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,11 +56,13 @@ class MainActivity : AppCompatActivity() {
                 var uri = rs!!.getString(rs!!.getColumnIndex(MediaStore.Audio.Media.DATA))
                 var author = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.ARTIST))
                 var title = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))
+                val image = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.ALBUM))
 
-                var music = Music(title, author, uri)
+                var music = Music(title, author, uri, image)
                 listsMusic.add(music)
             }
         }
+        Log.d("debug", listsMusic.size.toString())
         binding.apply {
             rvMusic.apply {
                 layoutManager = LinearLayoutManager(this@MainActivity)
