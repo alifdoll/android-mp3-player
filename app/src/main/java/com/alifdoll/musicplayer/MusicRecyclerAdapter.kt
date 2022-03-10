@@ -32,16 +32,19 @@ class MusicRecyclerAdapter(val musics: ArrayList<Music>) : RecyclerView.Adapter<
 
     override fun getItemCount() = musics.size
 
-    inner class MusicViewHolder(val binding: ItemMusicBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class MusicViewHolder(private val binding: ItemMusicBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(music: Music) {
             binding.apply {
                 musicTitle.text = music.title
                 musicArtist.text = music.artist
 
-//                Glide
-//                    .with(itemView.context)
-//                    .load(music.image)
-//                    .into(musicPoster)
+                Glide
+                    .with(itemView.context)
+                    .load(music.imageURI)
+                    .placeholder(R.drawable.ic_baseline_music_note_24)
+                    .into(musicPoster)
+
+//                musicPoster.set(music.image)
             }
         }
 

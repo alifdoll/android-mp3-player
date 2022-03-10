@@ -2,13 +2,14 @@ package com.alifdoll.musicplayer
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alifdoll.musicplayer.databinding.ActivityMainBinding
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
             PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 111)
         } else {
+
             loadMusic()
         }
 
@@ -44,24 +46,40 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("Range")
+    @SuppressLint("Range", "Recycle")
     private fun loadMusic() {
         val listsMusic =  ArrayList<Music>()
-        var mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        var select = MediaStore.Audio.Media.IS_MUSIC + "!=0"
+        val mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val select = MediaStore.Audio.Media.IS_MUSIC + "!=0"
 
-        var rs = contentResolver.query(mediaUri, null, select, null, null)
+        val rs = contentResolver.query(mediaUri, null, select, null, null)
+
+
         if (rs != null) {
-            while (rs!!.moveToNext()) {
-                var uri = rs!!.getString(rs!!.getColumnIndex(MediaStore.Audio.Media.DATA))
-                var author = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                var title = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))
-                val image = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.ALBUM))
+            while (rs.moveToNext()) {
+                val uri = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.DATA))
+                val author = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.ARTIST))
+                val title = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))
+                val albumId = rs.getLong(rs.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ID))
 
-                var music = Music(title, author, uri, image)
+
+
+                val music = Music(title, author, uri, albumId)
                 listsMusic.add(music)
+
+
             }
         }
+
+
+        listsMusic.forEachIndexed { index, music ->
+            val imageURI = Uri.parse("content://media/external/audio/albumart")
+            val imageAlbum = ContentUris.withAppendedId(imageURI,
+                listsMusic[index].image);
+            music.imageURI = imageAlbum
+        }
+
+
         Log.d("debug", listsMusic.size.toString())
         binding.apply {
             rvMusic.apply {
