@@ -8,16 +8,20 @@ import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Debug
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alifdoll.musicplayer.databinding.ActivityMainBinding
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var listMusic = ArrayList<Music>()
     private var mediaPlayer: MediaPlayer? = null
+    private var isPlayed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,40 @@ class MainActivity : AppCompatActivity() {
             loadMusic()
         }
 
+        if (listMusic.size > 0) {
+            currentPlay()
+        }
+
+        mediaPlayer = MediaPlayer()
+
+        binding.playButton.setOnClickListener {
+            if (isPlayed) {
+                mediaPlayer!!.stop()
+                isPlayed = false
+                binding.playButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+
+            } else {
+                isPlayed = true
+                val music = listMusic[0]
+                try {
+                    mediaPlayer!!.setDataSource(music.uri)
+                    mediaPlayer!!.prepare()
+                    mediaPlayer!!.start()
+                    binding.playButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
+                } catch (e: Exception) {
+                    throw e
+                }
+            }
+
+        }
+
+    }
+
+    private fun currentPlay() {
+        val music = listMusic[0]
+
+        binding.musicPoster.setImageURI(music.imageURI)
+        binding.musicTitle.text = music.title
     }
 
     override fun onRequestPermissionsResult(
@@ -48,7 +86,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("Range", "Recycle")
     private fun loadMusic() {
-        val listsMusic =  ArrayList<Music>()
         val mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val select = MediaStore.Audio.Media.IS_MUSIC + "!=0"
 
@@ -59,32 +96,30 @@ class MainActivity : AppCompatActivity() {
             while (rs.moveToNext()) {
                 val uri = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.DATA))
                 val author = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                val title = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))
+                val title = rs.getString(rs.getColumnIndex(MediaStore.Audio.Media.TITLE))
                 val albumId = rs.getLong(rs.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ID))
 
+                val uriImage = Uri.Builder()
+                uriImage
+                    .scheme("content")
+                    .authority("media")
+                    .appendPath("external")
+                    .appendPath("audio")
+                    .appendPath("albumart")
+                    .appendPath(albumId.toString())
 
 
-                val music = Music(title, author, uri, albumId)
-                listsMusic.add(music)
+                val music = Music(title, author, uri, uriImage.build())
+                listMusic.add(music)
 
 
             }
         }
 
-
-        listsMusic.forEachIndexed { index, music ->
-            val imageURI = Uri.parse("content://media/external/audio/albumart")
-            val imageAlbum = ContentUris.withAppendedId(imageURI,
-                listsMusic[index].image);
-            music.imageURI = imageAlbum
-        }
-
-
-        Log.d("debug", listsMusic.size.toString())
         binding.apply {
             rvMusic.apply {
                 layoutManager = LinearLayoutManager(this@MainActivity)
-                adapter = MusicRecyclerAdapter(listsMusic)
+                adapter = MusicRecyclerAdapter(listMusic)
                 setHasFixedSize(true)
             }
         }

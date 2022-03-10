@@ -26,6 +26,7 @@
         app:layout_constraintStart_toEndOf="@+id/music_poster"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Music Title"
+        android:maxLength="10"
         android:textSize="24sp"/>
 
     <TextView

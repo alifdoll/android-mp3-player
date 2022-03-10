@@ -7,15 +7,7 @@ import com.alifdoll.musicplayer.databinding.ItemMusicBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
-class MusicRecyclerAdapter(val musics: ArrayList<Music>) : RecyclerView.Adapter<MusicRecyclerAdapter.MusicViewHolder>(){
-
-//    private val musics = ArrayList<Music>()
-//
-//    fun setMusic(musicList: List<Music>) {
-//        if (musicList.isNullOrEmpty()) return
-//        musics.clear()
-//        musics.addAll(musicList)
-//    }
+class MusicRecyclerAdapter(private val musics: ArrayList<Music>) : RecyclerView.Adapter<MusicRecyclerAdapter.MusicViewHolder>(){
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
