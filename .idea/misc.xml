@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidProject/Mp3Player/app/src/main/res/drawable/ic_baseline_play_arrow_24.xml" value="0.165" />
+        <entry key="..\:/AndroidProject/Mp3Player/app/src/main/res/drawable/ic_baseline_skip_next_24.xml" value="0.1475" />
         <entry key="..\:/AndroidProject/Mp3Player/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/AndroidProject/Mp3Player/app/src/main/res/layout/activity_music_detail.xml" value="0.1286231884057971" />
         <entry key="..\:/AndroidProject/Mp3Player/app/src/main/res/layout/item_music.xml" value="0.25" />

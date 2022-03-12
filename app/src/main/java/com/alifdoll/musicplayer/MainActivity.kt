@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Debug
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alifdoll.musicplayer.databinding.ActivityMainBinding
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private var listMusic = ArrayList<Music>()
     private var mediaPlayer: MediaPlayer? = null
     private var isPlayed = false
+    private lateinit var currentlyPlayed: Music
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,40 +41,70 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (listMusic.size > 0) {
-            currentPlay()
+            currentPlay(listMusic[0])
         }
 
         mediaPlayer = MediaPlayer()
 
+
         binding.playButton.setOnClickListener {
-            if (isPlayed) {
-                mediaPlayer!!.stop()
-                mediaPlayer!!.reset()
-                isPlayed = false
-                binding.playButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+            play(currentlyPlayed)
+        }
 
-            } else {
-                isPlayed = true
-                val music = listMusic[0]
-                try {
-                    mediaPlayer!!.setDataSource(music.uri)
-                    mediaPlayer!!.prepare()
-                    mediaPlayer!!.start()
-                    binding.playButton.setBackgroundResource(R.drawable.ic_baseline_pause_24)
-                } catch (e: Exception) {
-                    throw e
-                }
-            }
+        binding.skipNextButton.setOnClickListener {
+            val next = nextPlay()
+            play(next)
 
+        }
+
+        binding.skipPreviousButton.setOnClickListener {
+            val prev = previousPlay()
+            play(prev)
+            Toast.makeText(this, "Skip Previous", Toast.LENGTH_SHORT).show()
         }
 
     }
 
-    private fun currentPlay() {
-        val music = listMusic[0]
-
+    private fun currentPlay(music: Music) {
+        currentlyPlayed = music
         binding.musicPoster.setImageURI(music.imageURI)
         binding.musicTitle.text = music.title
+    }
+
+    private fun nextPlay(): Music{
+        val currentIndex = listMusic.indexOf(currentlyPlayed) + 1
+        val nextIndex = if (currentIndex > listMusic.size - 1)  0 else currentIndex + 1
+        currentlyPlayed = listMusic[nextIndex]
+        currentPlay(currentlyPlayed)
+        return currentlyPlayed
+    }
+
+    private fun previousPlay(): Music {
+        val currentIndex = listMusic.indexOf(currentlyPlayed) - 1
+        val previousIndex = if (currentIndex < 0)  listMusic.lastIndex else currentIndex - 1
+        currentlyPlayed = listMusic[previousIndex]
+        currentPlay(currentlyPlayed)
+        return currentlyPlayed
+    }
+
+    private fun play(music: Music) {
+        if (isPlayed) {
+            mediaPlayer!!.stop()
+            mediaPlayer!!.reset()
+            isPlayed = false
+            binding.playButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
+
+        } else {
+            isPlayed = true
+            try {
+                mediaPlayer!!.setDataSource(music.uri)
+                mediaPlayer!!.prepare()
+                mediaPlayer!!.start()
+                binding.playButton.setBackgroundResource(R.drawable.ic_baseline_stop_24)
+            } catch (e: Exception) {
+                throw e
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(
