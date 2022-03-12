@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         binding.playButton.setOnClickListener {
             if (isPlayed) {
                 mediaPlayer!!.stop()
+                mediaPlayer!!.reset()
                 isPlayed = false
                 binding.playButton.setBackgroundResource(R.drawable.ic_baseline_play_arrow_24)
 
@@ -115,6 +117,8 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+
+        Log.d("Test", listMusic.size.toString())
 
         binding.apply {
             rvMusic.apply {
